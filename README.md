@@ -1,2 +1,3 @@
-# esic-aquarius
-eSIC Aquarius
+# eSIC Aquarius
+
+Em desenvolvimento...
