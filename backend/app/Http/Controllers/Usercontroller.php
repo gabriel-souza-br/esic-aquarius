@@ -1,33 +1,38 @@
 <?php
+/*
+ * This file is part of the eSIC Aquarius.
+ *
+ * (c) Gabriel de Araújo Souza <gabriel.takashi@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Laravel\Lumen\Routing\Controller as BaseController;
 
-class UserController extends BaseController
+class UserController extends Controller
 {
     /**
-     * Get user actual
+     * Retorna o Usuário logado atualmente
      *
      * @return void
      */
     public function me()
     {
-        return response()->json(
-            auth()->user()
-        );
+        return self::responderOK([auth()->user()]);
     }
 
     /**
-     * Get list of users
+     * Listar todos Usuários
      *
      * @return void
      */
     public function getUsers()
     {
-        return response()->json([
-            'list' => User::all()
+        return self::responderOK([
+            'lista' => User::all()
         ]);
     }
 }

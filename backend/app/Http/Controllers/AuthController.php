@@ -1,11 +1,20 @@
 <?php
 
+/*
+ * This file is part of the eSIC Aquarius.
+ *
+ * (c) Gabriel de Araújo Souza <gabriel.takashi@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Http\Controllers;
 
 class AuthController extends Controller
 {
     /**
-     * Create a new AuthController instance.
+     * Cria uma nova instância de AuthController.
      *
      * @return void
      */
@@ -15,17 +24,17 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User.
+     * Retorna o Usuário logado atualmente.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function user()
     {
-        return response()->json(auth()->user());
+        return self::responderOK([auth()->user()]);
     }
 
     /**
-     * Login
+     * Tenta efetuar o Login
      *
      * @return void
      */
@@ -33,15 +42,16 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json([
-                'error' => 'Unauthorized'
-            ], 401);
+            return self::responderAcessoNegado(
+                ['error' => 'Acesso não autorizado!'],
+                self::AlertErro('Acesso não autorizado!', 'ERRO')
+            );
         }
         return $this->respondWithToken($token);
     }
 
     /**
-     * refresh
+     * Tenta efetuar o Refresh do Token ativo
      *
      * @return void
      */
@@ -52,30 +62,32 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout
+     * Tenta efetuar o Logout
      *
      * @return void
      */
     public function logout()
     {
         auth()->logout();
-        return response()->json([
-            'message' => 'Logout with success!'
-        ], 401);
+        return self::responderOK(
+            ['message' => 'Logout with success!']
+        );
     }
 
     /**
-     * Undocumented function
+     * Formata a resposta contendo o token atual
      *
-     * @param [type] $token
+     * @param String $token
      * @return void
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60 // default 1 hour
-        ]);
+        return self::responderOK(
+            [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60 // default: 1 hora (Configuravel no .env)
+            ]
+        );
     }
 }
