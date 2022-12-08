@@ -17,7 +17,7 @@ import RegisterPage from '@/pages/RegisterPage'
  | Views:
  |------------------
  */
-import LoginView from '@/views/LoginView'
+import LoginRegisterView from '@/views/auth/LoginRegisterView'
 
 const routes = [
     {
@@ -26,7 +26,7 @@ const routes = [
         children: [
             {
                 path: '/',
-                component: () => import('@/views/AboutView.vue')
+                component: LoginRegisterView
             },
         ]
     },
@@ -36,7 +36,7 @@ const routes = [
         children: [
             {
                 path: 'login',
-                component: LoginView
+                component: LoginRegisterView
             },
             {
                 path: 'register',

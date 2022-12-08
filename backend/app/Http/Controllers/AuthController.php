@@ -11,6 +11,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Services\AuthService;
+use App\Services\UserService;
+
 class AuthController extends Controller
 {
     /**
@@ -20,17 +25,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
-
-    /**
-     * Retorna o Usuário logado atualmente.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function user()
-    {
-        return self::responderOK([auth()->user()]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     /**
@@ -38,16 +33,22 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
-        if (!$token = auth()->attempt($credentials)) {
-            return self::responderAcessoNegado(
-                ['error' => 'Acesso não autorizado!'],
-                self::AlertErro('Acesso não autorizado!', 'ERRO')
+        AuthService::validar_login($request);
+        $credenciais = $request->only(['cpfcnpj', 'password']);
+
+        try {
+            if (!$token = Auth::attempt($credenciais)) {
+                return self::responderAcessoNegado(['Acesso Negado'], self::AlertErro('Acesso Negado', 'ERRO'));
+            }
+            return self::responderOK([$this->estruturarToken($token)]);
+        } catch (\Exception $e) {
+            return self::responderErroGenerico(
+                [utf8_encode($e->getMessage())],
+                self::AlertErro('Erro ao tentar efetuar Login.', 'ERRO')
             );
         }
-        return $this->respondWithToken($token);
     }
 
     /**
@@ -57,8 +58,34 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        $token = auth()->refresh();
-        return $this->respondWithToken($token);
+        try {
+            $token = Auth::refresh();
+            return self::responderOK([$this->estruturarToken($token)]);
+        } catch (\Exception $e) {
+            return self::responderErroGenerico(
+                [utf8_encode($e->getMessage())],
+                self::AlertErro('Erro ao efetuar refresh do Token de Acesso.', 'ERRO')
+            );
+        }
+    }
+
+    /**
+     * Cria novo registro (Usuário)
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function register(Request $request)
+    {
+        UserService::validar_criar($request);
+        try {
+            return self::responderCriadoOuAtualizado(UserService::criar($request));
+        } catch (\Exception $e) {
+            return self::responderErroGenerico(
+                [utf8_encode($e->getMessage())],
+                self::AlertErro('Erro ao Cadastrar Registro.', 'ERRO')
+            );
+        }
     }
 
     /**
@@ -68,10 +95,13 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
-        return self::responderOK(
-            ['message' => 'Logout with success!']
-        );
+        try {
+            auth()->logout();
+            return self::responderCriadoOuAtualizado(['Deslogado com sucesso!']);
+        } catch (\Exception $e) {
+            $err = utf8_encode($e->getMessage());
+            return self::responderErroGenerico([$err], self::AlertErro($err, 'ERRO'));
+        }
     }
 
     /**
@@ -80,14 +110,12 @@ class AuthController extends Controller
      * @param String $token
      * @return void
      */
-    protected function respondWithToken($token)
+    protected function estruturarToken($token)
     {
-        return self::responderOK(
-            [
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60 // default: 1 hora (Configuravel no .env)
-            ]
-        );
+        return [
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60 // default: 1 hora (Configuravel no .env)
+        ];
     }
 }

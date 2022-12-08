@@ -18,8 +18,9 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function ($router) {
-    $router->post('login', 'AuthController@login');
-    $router->post('logout', 'AuthController@logout');
-    $router->post('refresh', 'AuthController@refresh');
+    $router->post('auth/login', 'AuthController@login');
+    $router->post('auth/register', 'AuthController@register');
+    $router->post('auth/logout', 'AuthController@logout');
+    $router->post('auth/refresh', 'AuthController@refresh');
     $router->get('user', 'AuthController@user');
 });
