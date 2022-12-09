@@ -42,7 +42,7 @@ class AuthController extends Controller
             if (!$token = Auth::attempt($credenciais)) {
                 return self::responderAcessoNegado(['Acesso Negado'], self::AlertErro('Acesso Negado', 'ERRO'));
             }
-            return self::responderOK([$this->estruturarToken($token)]);
+            return self::responderOK($this->estruturarToken($token));
         } catch (\Exception $e) {
             return self::responderErroGenerico(
                 [utf8_encode($e->getMessage())],
@@ -112,10 +112,28 @@ class AuthController extends Controller
      */
     protected function estruturarToken($token)
     {
-        return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60 // default: 1 hora (Configuravel no .env)
+        $u = Auth::user();
+        $user =  [
+            'cpfcnpj' => $u->cpfcnpj,
+            'nome' => $u->nome,
+            'email' => $u->email,
+            'telefone' => $u->telefone,
+            'celular' => $u->celular,
+            'cep' => $u->cep,
+            'logradouro' => $u->logradouro,
+            'bairro' => $u->bairro,
+            'cidade' => $u->cidade,
+            'numero' => $u->numero,
+            'complemento' => $u->complemento,
+            'data_cadastro' => $u->data_cadastro,
+            'data_ativacao' => $u->data_ativacao,
+            'data_inativacao' => $u->data_inativacao
         ];
+        $jwt_token = [
+            'acesso_token' => $token,
+            'acesso_tipo' => 'bearer',
+            'acesso_expira_em' => Auth::factory()->getTTL() * 60,
+        ];
+        return ['jwt_token' => $jwt_token, 'user' => $user];
     }
 }

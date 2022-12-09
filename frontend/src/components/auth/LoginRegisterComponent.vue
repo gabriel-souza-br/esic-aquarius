@@ -158,7 +158,6 @@
 </template>
 
 <script>
-import AuthService from "../../services/auth.service";
 
 export default {
   data() {
@@ -238,7 +237,7 @@ export default {
       //Login
       if (!this.dados.cadastrar)
         if (!this.$refs.cpfcnpj.hasError && !this.$refs.password.hasError) {
-          AuthService.login({
+          /*AuthService.login({
             cpfcnpj: this.dados.cpfcnpj,
             password: this.dados.password,
           }).then(
@@ -260,7 +259,32 @@ export default {
                 position: "top-right",
               });
             }
-          );
+          );*/
+
+          this.$store
+            .dispatch("auth/login", {
+              cpfcnpj: this.dados.cpfcnpj,
+              password: this.dados.password,
+            })
+            .then(
+              () => {
+                //this.$router.push("/user/perfil");
+                this.$q.notify({
+                  icon: "done",
+                  color: "positive",
+                  message: localStorage.getItem('user'),
+                  position: "top-right",
+                });
+              },
+              (error) => {
+                this.carregando = false;
+                this.requisicao.erros =
+                  (error.response && error.response.data) ||
+                  error.message ||
+                  error.toString();
+                console.log(this.requisicao.erros);
+              }
+            );
         }
     },
 
