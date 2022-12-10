@@ -30,25 +30,25 @@ class AuthService {
     }
     /**
      * Responsável por executar o refresh do Token
-     **//*
+     **/
     refresh() {
-        return axios
+        return api
             .post(AUTH_URL + '/refresh')
             .then(response => {
                 return response.data.mensagens;
             });
-    }*/
+    }
     /**
      * Responsável por executar o Logout
-     **//*
+     **/
     logout() {
-        return axios
-            .get(AUTH_URL + '/logout')
+        return api
+            .post(AUTH_URL + '/logout')
             .then(response => {
                 return response.data;
             });
     }
-*/
+
     get jwt_token() {
         return new JwtToken(
             JSON.parse(localStorage.getItem("jwt_token"))

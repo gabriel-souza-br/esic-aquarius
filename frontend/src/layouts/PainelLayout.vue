@@ -5,7 +5,9 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-separator dark vertical inset />
-        <q-toolbar-title> e-SIC Aquarius </q-toolbar-title>
+        <q-toolbar-title>
+          e-SIC Aquarius - {{ user ? user.nome : "" }}
+        </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -42,6 +44,11 @@ export default {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
     };
+  },
+  computed: {
+    user() {
+      return this.$store.getters["auth/estadoAtual"].user;
+    },
   },
 };
 </script>

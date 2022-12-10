@@ -158,7 +158,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {
@@ -268,13 +267,7 @@ export default {
             })
             .then(
               () => {
-                //this.$router.push("/user/perfil");
-                this.$q.notify({
-                  icon: "done",
-                  color: "positive",
-                  message: localStorage.getItem('user'),
-                  position: "top-right",
-                });
+                this.$router.push("/painel");
               },
               (error) => {
                 this.carregando = false;

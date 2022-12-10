@@ -1,19 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import store from '@/store'
+
 /*
- |------------------
  | Layouts:
  |------------------
  */
 import PainelLayout from '@/layouts/PainelLayout'
 import PublicoLayout from '@/layouts/PublicoLayout'
 /*
- |------------------
  | Páginas:
  |------------------
  */
 import RegisterPage from '@/pages/RegisterPage'
 /*
- |------------------
  | Views:
  |------------------
  */
@@ -37,6 +36,10 @@ const routes = [
             {
                 path: 'login',
                 component: LoginRegisterView
+            },
+            {
+                path: 'logout',
+                component: () => { store.dispatch("auth/logout") }
             },
             {
                 path: 'register',
