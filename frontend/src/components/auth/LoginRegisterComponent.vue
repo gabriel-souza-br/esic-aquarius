@@ -145,6 +145,7 @@
               @click="submit"
               class="full-width text-white"
               :label="`${this.dados.cadastrar ? 'Cadastrar' : 'Enviar'}`"
+              :loading="requisicao.carregando"
             />
           </q-card-actions>
           <!-- Esqueci minha senha -->
@@ -175,6 +176,7 @@ export default {
         password_tipo:
           "password" /* Será "text" quando houver clique para mostrar a senha */,
       },
+      requisicao: { erros: null, carregando: false },
     };
   },
 
@@ -236,30 +238,7 @@ export default {
       //Login
       if (!this.dados.cadastrar)
         if (!this.$refs.cpfcnpj.hasError && !this.$refs.password.hasError) {
-          /*AuthService.login({
-            cpfcnpj: this.dados.cpfcnpj,
-            password: this.dados.password,
-          }).then(
-            //Sucesso
-            (data) => {
-              this.$q.notify({
-                icon: "done",
-                color: "positive",
-                message: data[0].access_token,
-                position: "top-right",
-              });
-            },
-            //Erro
-            (err) => {
-              this.$q.notify({
-                icon: "close",
-                color: "negative",
-                message: err.response.data.mensagens,
-                position: "top-right",
-              });
-            }
-          );*/
-
+          this.requisicao.carregando = true;
           this.$store
             .dispatch("auth/login", {
               cpfcnpj: this.dados.cpfcnpj,
@@ -267,15 +246,15 @@ export default {
             })
             .then(
               () => {
+                this.requisicao = { erros: null, carregando: false };
                 this.$router.push("/painel");
               },
               (error) => {
-                this.carregando = false;
+                this.requisicao.carregando = false;
                 this.requisicao.erros =
                   (error.response && error.response.data) ||
                   error.message ||
                   error.toString();
-                console.log(this.requisicao.erros);
               }
             );
         }

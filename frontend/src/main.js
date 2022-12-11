@@ -1,9 +1,12 @@
 import { createApp } from 'vue'
-import App from '@/App.vue'
 import { Quasar } from 'quasar'
 import quasarUserOptions from '@/quasar-user-options'
+import { boot } from 'quasar/wrappers'
+
+import App from '@/App.vue'
 import router from '@/router'
 import store from "@/store";
+import { axios, api } from "@/interceptor";
 
 createApp(App)
     .use(store)
@@ -12,4 +15,11 @@ createApp(App)
         Quasar,
         quasarUserOptions,
     )
-    .mount('#app')
+    .mount('#app');
+
+
+//Quasar framework config axios/api:
+export default boot(({ app }) => {
+    app.config.globalProperties.$axios = axios
+    app.config.globalProperties.$api = api
+})

@@ -45,7 +45,7 @@ export const auth = {
         logout({ commit }) {
             return AuthService.logout().then(
                 response => {
-                    commit('logout', response);
+                    commit('logout');
                     return Promise.resolve(response);
                 },
                 error => {

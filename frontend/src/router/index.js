@@ -39,7 +39,7 @@ const routes = [
             },
             {
                 path: 'logout',
-                component: () => { store.dispatch("auth/logout") }
+                component: () => store.dispatch("auth/logout")
             },
             {
                 path: 'register',
