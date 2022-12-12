@@ -6,7 +6,7 @@ import { boot } from 'quasar/wrappers'
 import App from '@/App.vue'
 import router from '@/router'
 import store from "@/store";
-import { axios, api } from "@/interceptor";
+import { axios, api } from "@/axios";
 
 createApp(App)
     .use(store)

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { api } from '@/interceptor'
+import { api } from '@/axios'
 import User from '@/models/user'
 import JwtToken from '@/models/jwtToken'
 

@@ -22,15 +22,18 @@
               <q-input
                 ref="cpfcnpj"
                 @keydown="setCpfCnpjMascara"
+                @keyup="clearBackendItemErrors('cpfcnpj')"
                 square
                 clearable
                 v-model="dados.cpfcnpj"
                 unmasked-value
                 :mask="form.cpfcnpj_mascara"
                 lazy-rules
-                :rules="[this.requerido, this.cpfcnpj]"
+                :rules="[this.required, this.cpfcnpj]"
                 type="text"
                 label="CPF/CNPJ"
+                :error-message="getBackendItemErrors('cpfcnpj')"
+                :error="hasBackendItemErrors('cpfcnpj')"
               >
                 <template v-slot:prepend>
                   <q-icon name="person" />
@@ -46,12 +49,14 @@
                 type="text"
                 v-model="dados.nome"
                 lazy-rules
-                :rules="[this.requerido, this.tamanho_minimo_5]"
+                :rules="[this.required, this.tamanho_minimo_5]"
                 :label="`${
                   form.cpfcnpj_mascara === '###.###.###-##'
                     ? 'Nome'
                     : 'Razão Social'
                 }`"
+                :error-message="getBackendItemErrors('nome')"
+                :error="hasBackendItemErrors('nome')"
               >
                 <template v-slot:prepend>
                   <q-icon name="person" />
@@ -67,8 +72,10 @@
                 v-model="dados.email"
                 type="email"
                 lazy-rules
-                :rules="[this.requerido, this.email, this.tamanho_minimo_5]"
+                :rules="[this.required, this.email, this.tamanho_minimo_5]"
                 label="Email"
+                :error-message="getBackendItemErrors('email')"
+                :error="hasBackendItemErrors('email')"
               >
                 <template v-slot:prepend>
                   <q-icon name="email" />
@@ -78,13 +85,16 @@
               <!-- Campo de Senha -->
               <q-input
                 ref="password"
+                @keyup="clearBackendItemErrors('password')"
                 square
                 clearable
                 v-model="dados.password"
                 :type="form.password_tipo"
                 lazy-rules
-                :rules="[this.requerido, this.tamanho_minimo_8]"
+                :rules="[this.required, this.tamanho_minimo_8]"
                 label="Senha"
+                :error-message="getBackendItemErrors('password')"
+                :error="hasBackendItemErrors('password')"
               >
                 <template v-slot:prepend>
                   <q-icon name="lock" />
@@ -112,11 +122,13 @@
                 :type="form.password_tipo"
                 lazy-rules
                 :rules="[
-                  this.requerido,
+                  this.required,
                   this.tamanho_minimo_8,
-                  this.cmp_password,
+                  this.password_confirmation,
                 ]"
                 label="Repetir Senha"
+                :error-message="getBackendItemErrors('password_confirmation')"
+                :error="hasBackendItemErrors('password_confirmation')"
               >
                 <template v-slot:prepend>
                   <q-icon name="lock" />
@@ -145,7 +157,7 @@
               @click="submit"
               class="full-width text-white"
               :label="`${this.dados.cadastrar ? 'Cadastrar' : 'Enviar'}`"
-              :loading="requisicao.carregando"
+              :loading="carregando"
             />
           </q-card-actions>
           <!-- Esqueci minha senha -->
@@ -159,7 +171,32 @@
 </template>
 
 <script>
+import { backendValidation } from "@/services/validation/backend.validation.service";
+import {
+  required,
+  email,
+  cpfcnpj,
+  password_confirmation,
+  tamanho_minimo_5,
+  tamanho_minimo_8,
+} from "@/services/validation/frontend.validation.service";
+
 export default {
+  name: "LoginRegisterComponent",
+  setup() {
+    const {
+      setBackendErrors,
+      getBackendItemErrors,
+      hasBackendItemErrors,
+      clearBackendItemErrors,
+    } = backendValidation();
+    return {
+      setBackendErrors,
+      getBackendItemErrors,
+      hasBackendItemErrors,
+      clearBackendItemErrors,
+    };
+  },
   data() {
     return {
       dados: {
@@ -176,45 +213,29 @@ export default {
         password_tipo:
           "password" /* Será "text" quando houver clique para mostrar a senha */,
       },
-      requisicao: { erros: null, carregando: false },
+      carregando: false,
     };
   },
 
   methods: {
-    /*REGRA DE VALIDAÇÃO: Campo requerido*/
-    requerido(val) {
-      return (val && val.length > 0) || "Campo obrigatório!";
+    /*==========REGRAS DE VALIDAÇÃO==========*/
+    required(val) {
+      return required(val);
     },
-    /*REGRA DE VALIDAÇÃO: Senha 1 e 2 devem ser iguais*/
-    cmp_password(val) {
-      const val2 = this.$refs.password.value;
-      return (val && val === val2) || "Senhas diferentes!";
+    cpfcnpj(val) {
+      return cpfcnpj(val);
     },
-    /*REGRA DE VALIDAÇÃO: Campo muito curto*/
-    tamanho_minimo(val, min) {
-      return (
-        (val && val.length >= min) ||
-        "O campo deve ter " + min + " caracteres ou mais!"
-      );
+    email(val) {
+      return email(val);
+    },
+    password_confirmation(val) {
+      return password_confirmation(val, this.$refs.password.value);
     },
     tamanho_minimo_5(val) {
-      return this.tamanho_minimo(val, 5);
+      return tamanho_minimo_5(val);
     },
     tamanho_minimo_8(val) {
-      return this.tamanho_minimo(val, 8);
-    },
-    /*REGRA DE VALIDAÇÃO: Campo deve ter 11 ou 14 caracteres*/
-    cpfcnpj(val) {
-      return (
-        (val && (val.length === 11 || val.length === 14)) ||
-        "CPF/CNPJ com tamanho inválido!"
-      );
-    },
-    /*REGRA DE VALIDAÇÃO: Campo deve ter a formatação de email*/
-    email(val) {
-      const emailPattern =
-        /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
-      return emailPattern.test(val) || "E-mail inválido!";
+      return tamanho_minimo_8(val);
     },
 
     /*==================================
@@ -222,23 +243,17 @@ export default {
      *==================================
      */
     submit() {
-      if (this.dados.cadastrar) {
-        //Cadastro
-        this.$refs.cpfcnpj.validate();
-        this.$refs.nome.validate();
-        this.$refs.email.validate();
-        this.$refs.password.validate();
-        this.$refs.password_confirmation.validate();
-      } else {
-        //Login
-        this.$refs.cpfcnpj.validate();
-        this.$refs.password.validate();
-      }
+      const campos_alvos = this.dados.cadastrar
+        ? ["cpfcnpj", "nome", "email", "password", "password_confirmation"]
+        : ["cpfcnpj", "password"];
+
+      //Faz a validação no Frontend dos campos (login ou cadastro dependendo)
+      campos_alvos.forEach((element) => this.$refs[element].validate());
 
       //Login
-      if (!this.dados.cadastrar)
+      if (!this.dados.cadastrar) {
         if (!this.$refs.cpfcnpj.hasError && !this.$refs.password.hasError) {
-          this.requisicao.carregando = true;
+          this.carregando = true;
           this.$store
             .dispatch("auth/login", {
               cpfcnpj: this.dados.cpfcnpj,
@@ -246,18 +261,19 @@ export default {
             })
             .then(
               () => {
-                this.requisicao = { erros: null, carregando: false };
+                this.carregando = false;
                 this.$router.push("/painel");
               },
               (error) => {
-                this.requisicao.carregando = false;
-                this.requisicao.erros =
-                  (error.response && error.response.data) ||
-                  error.message ||
-                  error.toString();
+                const resp = error.response;
+                if (resp.status === 422 /*Unprocessable Content*/) {
+                  this.setBackendErrors(resp.data.mensagens);
+                }
+                this.carregando = false;
               }
             );
         }
+      }
     },
 
     /*Mostra ou esconde senha*/
