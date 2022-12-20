@@ -1,0 +1,40 @@
+======================================================
+eSIC-Aquarius - TODO (FAQ)
+======================================================
+Última atualização: 2022-12-19 15:56
+
+>> Os itens tracejados (-) estão sendo trabalhados ou estão prontos para próxima versão.
+>> A ordem de prioridades é de cima para baixo.
+
+DESENVOLVIMENTO
+-----------
+
+-   [Auth] Login
+-   [Auth] Logout
+-   [Auth] Registro de Usuário
+    [Auth] Validação/Confirmação do Registro de Usuário
+    [Auth] Reset de Senha
+
+    [User] Editar Cadastro
+    [User] Inativar Cadastro
+
+-   [Regional] Criar Regional
+-   [Regional] Pesquisar Regional
+-   [Regional] Listar Regional
+-   [Regional] Editar Regional
+-   [Regional] Inativar Regional
+-   [Regional] Excluir Regional
+
+    [Solicitação] Criar Solicitação
+    [Solicitação] Pesquisar Solicitação
+    [Solicitação] Listar Solicitação
+    [Solicitação] Editar Solicitação
+    [Solicitação] Inativar Solicitação
+    [Solicitação] Excluir Solicitação
+
+    [Instância] Criar Instância
+    [Instância] Pesquisar Instância
+    [Instância] Listar Instância
+    [Instância] Editar Instância
+    [Instância] Inativar Instância
+    [Instância] Excluir Instância
