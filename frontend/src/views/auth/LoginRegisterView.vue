@@ -1,15 +1,15 @@
 <template>
   <q-page style="background: linear-gradient(#555, #333)">
-    <LoginRegisterComponent />
+    <AuthLoginRegisterComponent />
   </q-page>
 </template>
 
 <script>
-import LoginRegisterComponent from "@/components/auth/LoginRegisterComponent";
+import AuthLoginRegisterComponent from "@/components/auth/LoginRegisterComponent";
 
 export default {
   components: {
-    LoginRegisterComponent,
+    AuthLoginRegisterComponent,
   },
 };
 </script>

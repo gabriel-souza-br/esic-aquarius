@@ -182,7 +182,7 @@ import {
 } from "@/services/validation/frontend.validation.service";
 
 export default {
-  name: "LoginRegisterComponent",
+  name: "AuthLoginRegisterComponent",
   setup() {
     const {
       setBackendErrors,

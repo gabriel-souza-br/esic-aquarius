@@ -16,7 +16,7 @@ import RegisterPage from '@/pages/RegisterPage'
  | Views:
  |------------------
  */
-import LoginRegisterView from '@/views/auth/LoginRegisterView'
+import AuthLoginRegisterView from '@/views/auth/LoginRegisterView'
 
 const routes = [
     {
@@ -25,7 +25,7 @@ const routes = [
         children: [
             {
                 path: '/',
-                component: LoginRegisterView
+                component: AuthLoginRegisterView
             },
         ]
     },
@@ -35,7 +35,7 @@ const routes = [
         children: [
             {
                 path: 'login',
-                component: LoginRegisterView
+                component: AuthLoginRegisterView
             },
             {
                 path: 'logout',
@@ -54,6 +54,10 @@ const routes = [
             {
                 path: '',
                 component: () => import('@/views/AboutView.vue')
+            },            
+            {
+                path: 'regional',
+                component: () => import('@/views/regional/ListarView.vue')
             },
             {
                 path: 'solicitacoes',
